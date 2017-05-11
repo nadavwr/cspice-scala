@@ -45,7 +45,7 @@ lazy val cspice = crossProject(JVMPlatform, NativePlatform)
   .in(file("."))
   .settings(
     commonSettings,
-    moduleName := "cspice-scala"
+    moduleName := "spice-scala"
   )
   .configurePlatform(JVMPlatform)(p => p.enablePlugins(JniNative))
   .jvmSettings(
