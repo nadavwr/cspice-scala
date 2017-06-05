@@ -26,7 +26,7 @@ def forallAlias(aliasName: String, commandName: String, projectNames: String*): 
   })
 
 lazy val commonSettings = Def.settings(
-  scalaVersion := "2.11.11",
+  scalaVersion := Scala_2_11,
   organization := "com.github.nadavwr",
   publishArtifact in (Compile, packageDoc) := false,
   licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
@@ -49,11 +49,8 @@ lazy val cspice = crossProject(JVMPlatform, NativePlatform)
   )
   .configurePlatform(JVMPlatform)(p => p.enablePlugins(JniNative))
   .jvmSettings(
-    libraryDependencies += "net.java.dev.jna" % "jna" % "4.4.0"
-  )
-  .nativeSettings(
-    resolvers += Resolver.bintrayRepo("nadavwr", "maven"),
-    libraryDependencies += "com.github.nadavwr" %%% "libffi-scala-native" % "0.3.4"
+    libraryDependencies += "net.java.dev.jna" % "jna" % "4.4.0",
+    crossPaths := true
   )
 
 lazy val cspiceJVM = cspice.jvm
@@ -64,11 +61,10 @@ lazy val cspiceTest = crossProject(JVMPlatform, NativePlatform)
   .settings(commonSettings)
   .settings(
     resolvers += Resolver.bintrayRepo("nadavwr", "maven"),
-    libraryDependencies += "com.github.nadavwr" %%% "makeshift" % "0.1.3"
+    libraryDependencies += "com.github.nadavwr" %%% "makeshift" % "0.2.0-SNAPSHOT"
   )
-  .nativeSettings(
-    test := { run.toTask("").value }
-  )
+  .jvmSettings(test := { (run in Compile).toTask("").value })
+  .nativeSettings(test := { run.toTask("").value })
   .dependsOn(cspice)
 
 lazy val cspiceTestJVM = cspiceTest.jvm

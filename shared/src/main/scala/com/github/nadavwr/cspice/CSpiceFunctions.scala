@@ -3,7 +3,9 @@ package com.github.nadavwr.cspice
 trait CSpiceFunctions {
 
   /**
-    * @param elts orbital elements,
+    * Determine state vector from osculating orbital elements.
+    *
+    * @param elts osculating orbital elements,
     *             see [[com.github.nadavwr.cspice.Elts Elts]]
     * @param et   the time at which the state of the orbiting body
     *             is to be determined, in ephemeris seconds past J2000
@@ -14,6 +16,8 @@ trait CSpiceFunctions {
   def conics(elts: Elts, et: Double): State
 
   /**
+    * Determine osculating orbital elements from state vector.
+    *
     * @param state the state (position and velocity) of the body
     *              at the specified time,
     *              see [[com.github.nadavwr.cspice.State State]]
