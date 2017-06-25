@@ -49,7 +49,6 @@ lazy val cspice = crossProject(JVMPlatform, NativePlatform)
   )
   .configurePlatform(JVMPlatform)(p => p.enablePlugins(JniNative))
   .jvmSettings(
-    libraryDependencies += "net.java.dev.jna" % "jna" % "4.4.0",
     crossPaths := true
   )
 
@@ -61,10 +60,9 @@ lazy val cspiceTest = crossProject(JVMPlatform, NativePlatform)
   .settings(commonSettings)
   .settings(
     resolvers += Resolver.bintrayRepo("nadavwr", "maven"),
-    libraryDependencies += "com.github.nadavwr" %%% "makeshift" % "0.2.0-SNAPSHOT"
+    libraryDependencies += "com.github.nadavwr" %%% "makeshift" % "0.2.0",
+    test := { (run in Compile).toTask("").value }
   )
-  .jvmSettings(test := { (run in Compile).toTask("").value })
-  .nativeSettings(test := { run.toTask("").value })
   .dependsOn(cspice)
 
 lazy val cspiceTestJVM = cspiceTest.jvm

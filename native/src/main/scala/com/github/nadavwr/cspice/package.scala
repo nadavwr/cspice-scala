@@ -1,7 +1,6 @@
 package com.github.nadavwr
 
 import scala.scalanative.native._
-import scala.scalanative.runtime.GC
 
 package object cspice extends CSpiceFunctions {
 
@@ -9,7 +8,9 @@ package object cspice extends CSpiceFunctions {
     */
   override def conics(elts: Elts, et: Double): State = {
     val statePtr = stackalloc[StateValue]
-    binding.conics_c(eltsToPtr(elts), et, statePtr)
+    Zone { implicit alloc =>
+      binding.conics_c(eltsToPtr(elts), et, statePtr)
+    }
     stateFromPtr(statePtr)
   }
 
@@ -17,14 +18,17 @@ package object cspice extends CSpiceFunctions {
     */
   override def oscelt(state: State, et: Double, mu: Double): Elts = {
     val eltsPtr = stackalloc[EltsValue]
-    binding.oscelt_c(stateToPtr(state), et, mu, eltsPtr)
+    Zone { implicit alloc =>
+      binding.oscelt_c(stateToPtr(state), et, mu, eltsPtr)
+    }
     eltsFromPtr(eltsPtr)
   }
 
 
   private type EltsValue = CArray[CDouble, Nat._8]
-  private def eltsToPtr(elts: Elts): Ptr[EltsValue] = {
-    val ptr = GC.malloc_atomic(sizeof[CDouble]*8).cast[Ptr[EltsValue]]
+  private def eltsToPtr(elts: Elts)
+                       (implicit alloc: Alloc): Ptr[EltsValue] = {
+    val ptr = alloc.alloc(sizeof[CDouble]*8).cast[Ptr[EltsValue]]
     !ptr._1 = elts.rp
     !ptr._2 = elts.ecc
     !ptr._3 = elts.inc
@@ -40,8 +44,9 @@ package object cspice extends CSpiceFunctions {
          !ptr._5, !ptr._6, !ptr._7, !ptr._8)
   
   private type StateValue = CArray[CDouble, Nat._6]
-  private def stateToPtr(state: State): Ptr[StateValue] = {
-    val ptr = GC.malloc_atomic(sizeof[CDouble]*6).cast[Ptr[StateValue]]
+  private def stateToPtr(state: State)
+                        (implicit alloc: Alloc): Ptr[StateValue] = {
+    val ptr = alloc.alloc(sizeof[CDouble]*6).cast[Ptr[StateValue]]
     !ptr._1 = state.px
     !ptr._2 = state.py
     !ptr._3 = state.pz
