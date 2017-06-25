@@ -27,8 +27,8 @@ package object cspice extends CSpiceFunctions {
 
   private type EltsValue = CArray[CDouble, Nat._8]
   private def eltsToPtr(elts: Elts)
-                       (implicit alloc: Alloc): Ptr[EltsValue] = {
-    val ptr = alloc.alloc(sizeof[CDouble]*8).cast[Ptr[EltsValue]]
+                       (implicit zone: Zone): Ptr[EltsValue] = {
+    val ptr = zone.alloc(sizeof[CDouble]*8).cast[Ptr[EltsValue]]
     !ptr._1 = elts.rp
     !ptr._2 = elts.ecc
     !ptr._3 = elts.inc
@@ -45,8 +45,8 @@ package object cspice extends CSpiceFunctions {
   
   private type StateValue = CArray[CDouble, Nat._6]
   private def stateToPtr(state: State)
-                        (implicit alloc: Alloc): Ptr[StateValue] = {
-    val ptr = alloc.alloc(sizeof[CDouble]*6).cast[Ptr[StateValue]]
+                        (implicit zone: Zone): Ptr[StateValue] = {
+    val ptr = zone.alloc(sizeof[CDouble]*6).cast[Ptr[StateValue]]
     !ptr._1 = state.px
     !ptr._2 = state.py
     !ptr._3 = state.pz
@@ -70,3 +70,4 @@ package object cspice extends CSpiceFunctions {
                  elts: Ptr[EltsValue]): Unit = extern
   }
 }
+
