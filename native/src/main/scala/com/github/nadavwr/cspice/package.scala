@@ -8,7 +8,7 @@ package object cspice extends CSpiceFunctions {
     */
   override def conics(elts: Elts, et: Double): State = {
     val statePtr = stackalloc[StateValue]
-    Zone { implicit alloc =>
+    Zone { implicit alloc: Zone =>
       binding.conics_c(eltsToPtr(elts), et, statePtr)
     }
     stateFromPtr(statePtr)
@@ -18,7 +18,7 @@ package object cspice extends CSpiceFunctions {
     */
   override def oscelt(state: State, et: Double, mu: Double): Elts = {
     val eltsPtr = stackalloc[EltsValue]
-    Zone { implicit alloc =>
+    Zone { implicit zone: Zone =>
       binding.oscelt_c(stateToPtr(state), et, mu, eltsPtr)
     }
     eltsFromPtr(eltsPtr)
@@ -28,7 +28,7 @@ package object cspice extends CSpiceFunctions {
   private type EltsValue = CArray[CDouble, Nat._8]
   private def eltsToPtr(elts: Elts)
                        (implicit zone: Zone): Ptr[EltsValue] = {
-    val ptr = zone.alloc(sizeof[CDouble]*8).cast[Ptr[EltsValue]]
+    val ptr = alloc[EltsValue]
     !ptr._1 = elts.rp
     !ptr._2 = elts.ecc
     !ptr._3 = elts.inc
@@ -46,7 +46,7 @@ package object cspice extends CSpiceFunctions {
   private type StateValue = CArray[CDouble, Nat._6]
   private def stateToPtr(state: State)
                         (implicit zone: Zone): Ptr[StateValue] = {
-    val ptr = zone.alloc(sizeof[CDouble]*6).cast[Ptr[StateValue]]
+    val ptr = alloc[StateValue]
     !ptr._1 = state.px
     !ptr._2 = state.py
     !ptr._3 = state.pz

@@ -24,8 +24,11 @@ endif()
 # Include directories
 include_directories(.)
 include_directories(include)
+include_directories(/usr/local/include)
 include_directories(../../target/native/include)
 include_directories(${JNI_INCLUDE_DIRS})
+
+link_directories(/usr/local/lib)
 
 # Sources
 file(GLOB LIB_SRC
